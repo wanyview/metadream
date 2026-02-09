@@ -1,0 +1,12 @@
+{
+  "name": "Metadream",
+  "version": "1.0.0",
+  "description": "基于非侵入式脑机的梦境学习平台",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx http-server . -p 3000"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
