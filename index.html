@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metadream - 梦境学习平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0d0d2d 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* 星空背景 */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        /* 主容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* 头部 */
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            position: relative;
+        }
+        
+        .logo {
+            font-size: 4rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            color: #a0a0c0;
+            margin-bottom: 30px;
+        }
+        
+        /* 核心价值卡片 */
+        .value-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .value-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .value-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(102,126,234,0.5);
+        }
+        
+        .value-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .value-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+        
+        .value-desc {
+            font-size: 0.9rem;
+            color: #a0a0c0;
+            line-height: 1.6;
+        }
+        
+        /* 系统架构图 */
+        .architecture {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+        }
+        
+        .arch-title {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: #667eea;
+        }
+        
+        .arch-layers {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .arch-layer {
+            background: linear-gradient(135deg, rgba(102,126,234,0.2) 0%, rgba(118,75,162,0.2) 100%);
+            border: 1px solid rgba(102,126,234,0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .layer-name {
+            font-size: 1rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .layer-items {
+            font-size: 0.85rem;
+            color: #a0a0c0;
+            line-height: 1.8;
+        }
+        
+        /* 用户流程 */
+        .user-flow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 40px 0;
+        }
+        
+        .flow-step {
+            background: rgba(102,126,234,0.2);
+            border: 1px solid rgba(102,126,234,0.4);
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.75rem;
+            line-height: 1.3;
+        }
+        
+        .flow-arrow {
+            font-size: 1.5rem;
+            color: #667eea;
+        }
+        
+        /* 核心模块 */
+        .modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 40px 0;
+        }
+        
+        .module {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .module:hover {
+            background: rgba(102,126,234,0.1);
+            border-color: rgba(102,126,234,0.3);
+        }
+        
+        .module-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        /* 交互演示区 */
+        .demo-section {
+            background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
+            border: 1px solid rgba(102,126,234,0.3);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+        }
+        
+        .demo-title {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: #667eea;
+        }
+        
+        .demo-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        
+        .demo-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+        }
+        
+        .demo-display {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 30px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        /* 睡眠状态指示器 */
+        .sleep-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .sleep-stage {
+            text-align: center;
+            opacity: 0.4;
+            transition: all 0.3s ease;
+        }
+        
+        .sleep-stage.active {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .sleep-stage .icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        
+        .sleep-stage .name {
+            font-size: 0.8rem;
+        }
+        
+        /* 进度条 */
+        .progress-container {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            height: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        /* 脑波可视化 */
+        .brain-wave {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100px;
+            margin: 20px 0;
+        }
+        
+        .wave-canvas {
+            width: 100%;
+            height: 100px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+        
+        /* 底部CTA */
+        .cta-section {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .cta-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        
+        .cta-subtitle {
+            color: #a0a0c0;
+            margin-bottom: 30px;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .arch-layers {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .user-flow {
+                flex-direction: column;
+            }
+            
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* 脉冲效果 */
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        /* 打字机效果 */
+        .typewriter {
+            overflow: hidden;
+            border-right: 2px solid #667eea;
+            white-space: nowrap;
+            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #667eea; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 星空背景 -->
+    <div class="stars" id="stars"></div>
+    
+    <div class="container">
+        <!-- 头部 -->
+        <header>
+            <div class="logo float">Metadream</div>
+            <p class="tagline">基于非侵入式脑机的梦境学习平台</p>
+            <p style="color: #a0a0c0; font-size: 0.9rem;">睡眠中学习效率提升 5-7 倍 · 仅做引导/体验/记忆强化</p>
+        </header>
+        
+        <!-- 核心价值 -->
+        <section class="value-cards">
+            <div class="value-card">
+                <div class="value-icon">🧠</div>
+                <div class="value-title">非侵入式BCI</div>
+                <div class="value-desc">EEG/EOG/ECG传感器，实时睡眠分期，精准REM识别</div>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">💤</div>
+                <div class="value-title">REM诱导</div>
+                <div class="value-desc">多模态刺激引导，安全可控的清醒梦体验</div>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">📚</div>
+                <div class="value-title">时间压缩学习</div>
+                <div class="value-desc">睡眠中记忆重放，效率提升5-7倍</div>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">🔒</div>
+                <div class="value-title">隐私合规</div>
+                <div class="value-desc">本地加密，不植入虚假记忆，符合伦理底线</div>
+            </div>
+        </section>
+        
+        <!-- 系统架构 -->
+        <section class="architecture">
+            <h2 class="arch-title">🏗️ 系统四层架构</h2>
+            <div class="arch-layers">
+                <div class="arch-layer">
+                    <div class="layer-name">感知层</div>
+                    <div class="layer-items">
+                        干电极EEG<br>
+                        眼电EOG<br>
+                        心电ECG<br>
+                        睡眠分期识别
+                    </div>
+                </div>
+                <div class="arch-layer">
+                    <div class="layer-name">计算层</div>
+                    <div class="layer-items">
+                        边缘AI推理<br>
+                        睡眠分期模型<br>
+                        刺激时序生成<br>
+                        个性化适配AI
+                    </div>
+                </div>
+                <div class="arch-layer">
+                    <div class="layer-name">交互层</div>
+                    <div class="layer-items">
+                        弱光近眼投射<br>
+                        定向声学刺激<br>
+                        微振动反馈<br>
+                        电子香氛
+                    </div>
+                </div>
+                <div class="arch-layer">
+                    <div class="layer-name">内容层</div>
+                    <div class="layer-items">
+                        历史沉浸剧场<br>
+                        语言情境对话<br>
+                        考点速记锚定<br>
+                        技能流程预演
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 用户流程 -->
+        <section>
+            <h2 style="text-align: center; margin-bottom: 20px; color: #667eea;">📋 用户流程</h2>
+            <div class="user-flow">
+                <div class="flow-step">1. 睡前<br>选择内容</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">2. 入睡<br>监测分期</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">3. REM<br>触发诱导</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">4. 梦境<br>情境学习</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">5. 醒后<br>复盘强化</div>
+            </div>
+        </section>
+        
+        <!-- 核心模块 -->
+        <section>
+            <h2 style="text-align: center; margin-bottom: 20px; color: #667eea;">⚙️ 核心功能模块</h2>
+            <div class="modules">
+                <div class="module">
+                    <div class="module-icon">👁️</div>
+                    <div>睡眠监测与REM识别</div>
+                </div>
+                <div class="module">
+                    <div class="module-icon">✨</div>
+                    <div>清醒梦诱导引擎</div>
+                </div>
+                <div class="module">
+                    <div class="module-icon">🧬</div>
+                    <div>神经编码编译器</div>
+                </div>
+                <div class="module">
+                    <div class="module-icon">🤖</div>
+                    <div>个性化适配AI</div>
+                </div>
+                <div class="module">
+                    <div class="module-icon">📊</div>
+                    <div>醒后复盘系统</div>
+                </div>
+                <div class="module">
+                    <div class="module-icon">🛡️</div>
+                    <div>未成年人安全</div>
+                </div>
+                <div class="module">
+                    <div class="module-icon">🔐</div>
+                    <div>数据隐私保护</div>
+                </div>
+                <div class="module">
+                    <div class="module-icon">📈</div>
+                    <div>实验数据面板</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 交互演示 -->
+        <section class="demo-section">
+            <h2 class="demo-title">🎮 交互演示</h2>
+            
+            <!-- 睡眠状态指示 -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h3 style="color: #a0a0c0; margin-bottom: 15px;">睡眠状态监测</h3>
+                <div class="sleep-indicator">
+                    <div class="sleep-stage active" id="stage-wake">
+                        <div class="icon">😄</div>
+                        <div class="name">清醒</div>
+                    </div>
+                    <div class="sleep-stage" id="stage-n1">
+                        <div class="icon">😴</div>
+                        <div class="name">N1</div>
+                    </div>
+                    <div class="sleep-stage" id="stage-n2">
+                        <div class="icon">💤</div>
+                        <div class="name">N2</div>
+                    </div>
+                    <div class="sleep-stage" id="stage-n3">
+                        <div class="icon">🌙</div>
+                        <div class="name">N3</div>
+                    </div>
+                    <div class="sleep-stage" id="stage-rem">
+                        <div class="icon">✨</div>
+                        <div class="name">REM</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 脑波可视化 -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h3 style="color: #a0a0c0; margin-bottom: 10px;">实时脑波信号</h3>
+                <canvas id="brainWave" class="wave-canvas" width="800" height="100"></canvas>
+            </div>
+            
+            <!-- 控制按钮 -->
+            <div class="demo-buttons">
+                <button class="demo-btn" onclick="startMonitoring()">▶️ 开始监测</button>
+                <button class="demo-btn" onclick="triggerREM()">✨ 触发REM诱导</button>
+                <button class="demo-btn" onclick="startLearning()">📚 开始梦境学习</button>
+                <button class="demo-btn" onclick="generateReport()">📊 生成学习报告</button>
+            </div>
+            
+            <!-- 状态显示 -->
+            <div class="demo-display" id="demoDisplay">
+                <div>
+                    <p style="font-size: 1.2rem; color: #667eea;">点击上方按钮开始体验</p>
+                    <p style="color: #a0a0c0; margin-top: 10px;">模拟睡眠监测与梦境学习流程</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 商业化路径 -->
+        <section style="margin: 40px 0;">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #667eea;">🚀 商业化里程碑</h2>
+            <div class="value-cards">
+                <div class="value-card">
+                    <div class="value-title">0-12月</div>
+                    <div class="value-desc">原型验证阶段<br>硬件选型 · 算法验证<br>种子用户测试</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-title">12-24月</div>
+                    <div class="value-desc">工程化阶段<br>产品定型 · 量产准备<br>ToC/ToB同步</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-title">24-36月</div>
+                    <div class="value-desc">商业化阶段<br>渠道扩张 · 生态构建<br>全球化布局</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- CTA -->
+        <section class="cta-section">
+            <h2 class="cta-title">🌟 开启你的梦境学习之旅</h2>
+            <p class="cta-subtitle">基于科学，不做科幻 · 符合伦理，安全可控</p>
+            <button class="demo-btn" style="font-size: 1.2rem; padding: 15px 50px;" onclick="alert('Metadream 系统演示完成！\n\n完整系统需配合硬件使用。\n\n技术文档：https://github.com/wanyview/metadream')">
+                了解更多
+            </button>
+        </section>
+        
+        <!-- 底部 -->
+        <footer style="text-align: center; padding: 30px; color: #666; font-size: 0.8rem;">
+            <p>Metadream © 2026 · 基于非侵入式脑机技术 · 符合民用合规与伦理</p>
+            <p style="margin-top: 10px;">
+                <a href="https://github.com/wanyview/metadream" style="color: #667eea; text-decoration: none;">技术文档</a> · 
+                <a href="#" style="color: #667eea; text-decoration: none;">联系我们</a> · 
+                <a href="#" style="color: #667eea; text-decoration: none;">隐私政策</a>
+            </p>
+        </footer>
+    </div>
+    
+    <script>
+        // 生成星空背景
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (2 + Math.random() * 3) + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // 脑波绘制
+        function drawBrainWave() {
+            const canvas = document.getElementById('brainWave');
+            const ctx = canvas.getContext('2d');
+            let offset = 0;
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.beginPath();
+                ctx.moveTo(0, canvas.height / 2);
+                
+                for (let x = 0; x < canvas.width; x += 2) {
+                    const y = canvas.height / 2 + 
+                        Math.sin((x + offset) * 0.05) * 20 +
+                        Math.sin((x + offset) * 0.02) * 15 +
+                        Math.random() * 5;
+                    ctx.lineTo(x, y);
+                }
+                
+                ctx.strokeStyle = '#667eea';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                offset += 2;
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+        
+        // 睡眠阶段状态
+        let currentStage = 'wake';
+        const stages = ['wake', 'n1', 'n2', 'n3', 'rem'];
+        
+        function updateSleepStage(stage) {
+            stages.forEach(s => {
+                document.getElementById('stage-' + s).classList.remove('active');
+            });
+            document.getElementById('stage-' + stage).classList.add('active');
+            currentStage = stage;
+        }
+        
+        // 交互功能
+        function startMonitoring() {
+            const display = document.getElementById('demoDisplay');
+            display.innerHTML = `
+                <p style="font-size: 1.5rem; color: #667eea; margin-bottom: 15px;">🔄 正在启动睡眠监测...</p>
+                <p style="color: #a0a0c0;">连接EEG传感器 · 初始化算法 · 等待入睡</p>
+            `;
+            
+            // 模拟睡眠阶段变化
+            setTimeout(() => {
+                updateSleepStage('n1');
+                display.innerHTML = `
+                    <p style="font-size: 1.5rem; color: #667eea; margin-bottom: 15px;">😴 检测到 N1 阶段</p>
+                    <p style="color: #a0a0c0;">轻度睡眠，脑波变缓</p>
+                `;
+            }, 2000);
+            
+            setTimeout(() => {
+                updateSleepStage('n2');
+                display.innerHTML = `
+                    <p style="font-size: 1.5rem; color: #667eea; margin-bottom: 15px;">💤 检测到 N2 阶段</p>
+                    <p style="color: #a0a0c0;">中度睡眠，睡眠纺锤波出现</p>
+                `;
+            }, 4000);
+            
+            setTimeout(() => {
+                updateSleepStage('n3');
+                display.innerHTML = `
+                    <p style="font-size: 1.5rem; color: #667eea; margin-bottom: 15px;">🌙 检测到 N3 阶段</p>
+                    <p style="color: #a0a0c0;">深度睡眠，慢波睡眠中</p>
+                `;
+            }, 6000);
+            
+            setTimeout(() => {
+                updateSleepStage('rem');
+                display.innerHTML = `
+                    <p style="font-size: 1.5rem; color: #667eea; margin-bottom: 15px;">✨ REM阶段检测到！</p>
+                    <p style="color: #a0a0c0;">准备启动多模态诱导...</p>
+                `;
+            }, 8000);
+        }
+        
+        function triggerREM() {
+            if (currentStage !== 'rem') {
+                document.getElementById('demoDisplay').innerHTML = `
+                    <p style="font-size: 1.5rem; color: #ff6b6b; margin-bottom: 15px;">⚠️ 当前非REM阶段</p>
+                    <p style="color: #a0a0c0;">请先启动睡眠监测，等待REM阶段</p>
+                `;
+                return;
+            }
+            
+            const display = document.getElementById('demoDisplay');
+            display.innerHTML = `
+                <p style="font-size: 1.5rem; color: #667eea; margin-bottom: 15px;">🎯 REM诱导触发中...</p>
+                <p style="color: #a0a0c0; margin-bottom: 10px;">✅ 弱光投射：安史之乱战场</p>
+                <p style="color: #a0a0c0; margin-bottom: 10px;">✅ 声学刺激：战鼓与号角</p>
+                <p style="color: #a0a0c0; margin-bottom: 10px;">✅ 振动反馈：马蹄震动感</p>
+                <p style="color: #a0a0c0;">✅ 香氛释放：硝烟与草士气味</p>
+            `;
+        }
+        
+        function startLearning() {
+            const display = document.getElementById('demoDisplay');
+            display.innerHTML = `
+                <p style="font-size: 1.5rem; color: #667eea; margin-bottom: 15px;">📚 梦境学习进行中...</p>
+                <div style="text-align: left; max-width: 400px; margin: 0 auto;">
+                    <p style="color: #a0a0c0; margin-bottom: 8px;">⏱️ 时间压缩比：7x</p>
+                    <p style="color: #a0a0c0; margin-bottom: 8px;">📖 内容：安史之乱第一视角</p>
+                    <p style="color: #a0a0c0; margin-bottom: 8px;">👁️ 眼动应答：识别叛军旗帜</p>
+                    <p style="color: #a0a0c0;">🎯 记忆锚点：3个关键事件</p>
+                </div>
+            `;
+        }
+        
+        function generateReport() {
+            const display = document.getElementById('demoDisplay');
+            display.innerHTML = `
+                <p style="font-size: 1.5rem; color: #667eea; margin-bottom: 15px;">📊 学习报告生成</p>
+                <div style="text-align: left; max-width: 500px; margin: 0 auto;">
+                    <p style="color: #a0a0c0; margin-bottom: 10px;">⏱️ 总睡眠时长：7.5小时</p>
+                    <p style="color: #a0a0c0; margin-bottom: 10px;">📖 有效学习：52.5分钟（7.5h × 7x压缩）</p>
+                    <p style="color: #a0a0c0; margin-bottom: 10px;">🎯 记忆准确率：87%</p>
+                    <p style="color: #a0a0c0; margin-bottom: 10px;">🏷️ 遗忘曲线提醒：3天后复习</p>
+                    <p style="color: #a0a0c0;">📋 复盘卡片：5张已发送至APP</p>
+                </div>
+            `;
+        }
+        
+        // 初始化
+        createStars();
+        drawBrainWave();
+    </script>
+</body>
+</html>
